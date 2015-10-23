@@ -1,6 +1,7 @@
 package com.commercetools.pspadapter.stripe.executors;
 
 import com.commercetools.pspadapter.stripe.TypeKeyToId;
+import com.commercetools.pspadapter.stripe.util.PaymentHelperMethods;
 import com.commercetools.pspadapter.stripe.util.PaymentPair;
 import com.commercetools.pspadapter.stripe.util.StripeExecution;
 import com.commercetools.pspadapter.stripe.util.StripeRequest;
@@ -126,13 +127,5 @@ public class IdempotentChargeExecutor extends PaymentHelperMethods implements Id
         chargeParams.put("customer", stripeCustomerId);
         chargeParams.put("capture", capture);
         return chargeParams;
-    }
-
-    private MonetaryAmount toAmount(Charge charge) {
-        return MoneyImpl.ofCents(charge.getAmount(), charge.getCurrency().toUpperCase());
-    }
-
-    private ZonedDateTime toTime(Long unixTimestamp) {
-        return ZonedDateTime.ofInstant(Instant.ofEpochSecond(unixTimestamp), ZoneId.systemDefault());
     }
 }

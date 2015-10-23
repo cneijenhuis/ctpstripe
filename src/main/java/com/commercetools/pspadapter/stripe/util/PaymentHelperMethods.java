@@ -1,10 +1,17 @@
-package com.commercetools.pspadapter.stripe.executors;
+package com.commercetools.pspadapter.stripe.util;
 
 import com.commercetools.pspadapter.stripe.TypeKeyToId;
+import com.stripe.model.Charge;
+import com.stripe.model.Dispute;
 import io.sphere.sdk.payments.Payment;
 import io.sphere.sdk.payments.commands.updateactions.AddInterfaceInteraction;
 import io.sphere.sdk.types.CustomFields;
+import io.sphere.sdk.utils.MoneyImpl;
 
+import javax.money.MonetaryAmount;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -58,5 +65,21 @@ public abstract class PaymentHelperMethods {
         objects.put("idempotencyKey", idempotencyKey);
         objects.put(fieldName, fieldValue);
         return AddInterfaceInteraction.ofTypeKeyAndObjects(typeKey, objects);
+    }
+
+    protected MonetaryAmount toAmount(Charge charge) {
+        return getMonetaryAmount(charge.getAmount(), charge.getCurrency());
+    }
+
+    protected MonetaryAmount toAmount(Dispute dispute) {
+        return getMonetaryAmount(dispute.getAmount(), dispute.getCurrency());
+    }
+
+    private MonetaryAmount getMonetaryAmount(Integer amount, String currency) {
+        return MoneyImpl.ofCents(amount, currency.toUpperCase());
+    }
+
+    protected ZonedDateTime toTime(Long unixTimestamp) {
+        return ZonedDateTime.ofInstant(Instant.ofEpochSecond(unixTimestamp), ZoneId.systemDefault());
     }
 }

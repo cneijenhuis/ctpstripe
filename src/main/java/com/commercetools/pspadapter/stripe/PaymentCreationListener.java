@@ -2,7 +2,7 @@ package com.commercetools.pspadapter.stripe;
 
 import com.commercetools.pspadapter.stripe.executors.IdempotentChargeExecutor;
 import com.commercetools.pspadapter.stripe.executors.IdempotentCustomerExecutor;
-import com.commercetools.pspadapter.stripe.executors.PaymentHelperMethods;
+import com.commercetools.pspadapter.stripe.util.PaymentHelperMethods;
 import com.commercetools.pspadapter.stripe.util.PaymentPair;
 import io.sphere.sdk.client.SphereClient;
 import io.sphere.sdk.payments.Payment;

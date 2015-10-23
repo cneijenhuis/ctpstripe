@@ -1,6 +1,7 @@
 package com.commercetools.pspadapter.stripe.executors;
 
 import com.commercetools.pspadapter.stripe.TypeKeyToId;
+import com.commercetools.pspadapter.stripe.util.PaymentHelperMethods;
 import com.commercetools.pspadapter.stripe.util.PaymentPair;
 import com.commercetools.pspadapter.stripe.util.StripeExecution;
 import com.commercetools.pspadapter.stripe.util.StripeRequest;
