@@ -29,10 +29,22 @@ import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static spark.Spark.get;
 import static spark.Spark.halt;
+import static spark.Spark.port;
 import static spark.Spark.post;
 
 public class WebHookReceiver {
+    static int getHerokuAssignedPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
+    }
+
     public static void main(String[] args) throws Exception {
+        Stripe.apiKey = System.getenv("CTP_STRIPE_ADAPTER_STRIPE_API_KEY");
+        port(getHerokuAssignedPort());
+
         get("/test", (req, res) -> {
             testing();
             return "Cool";
