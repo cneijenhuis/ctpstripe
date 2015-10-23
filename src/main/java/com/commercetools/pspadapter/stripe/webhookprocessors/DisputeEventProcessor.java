@@ -76,7 +76,7 @@ public class DisputeEventProcessor extends PaymentHelperMethods {
     private CompletableFuture<Payment> addEventToPayment(Payment payment, Event event, Dispute dispute) {
         HashMap<String, Object> objects = new HashMap();
         objects.put("eventId", event.getId());
-        objects.put("dispute", dispute.toString());
+        objects.put("dispute", StripeObject.PRETTY_PRINT_GSON.toJson(dispute));
         final List<UpdateAction<Payment>> updateActions = new ArrayList();
         // Save full dispute object
         updateActions.add(AddInterfaceInteraction.ofTypeKeyAndObjects("STRIPE_DISPUTE_UPDATE", objects));
