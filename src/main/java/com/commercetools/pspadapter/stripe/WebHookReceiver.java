@@ -116,6 +116,7 @@ public class WebHookReceiver {
         createTypeWithTwoStringFields(client, typeKeyToId, "STRIPE_TEMPORARY_EXCEPTION", "response", "idempotencyKey");
         createTypeWithTwoStringFields(client, typeKeyToId, "STRIPE_CUSTOMER_CHECKED", "stripeCustomerId", "idempotencyKey");
         createTypeWithTwoStringFields(client, typeKeyToId, "STRIPE_CHARGED", "chargeId", "idempotencyKey");
+        createTypeWithTwoStringFields(client, typeKeyToId, "STRIPE_DISPUTE_UPDATE", "eventId", "dispute");
     }
 
     private static void createTypeWithStringField(SphereClient client, TypeKeyToId typeKeyToId, String typeKey, String fieldName) throws InterruptedException, java.util.concurrent.ExecutionException {

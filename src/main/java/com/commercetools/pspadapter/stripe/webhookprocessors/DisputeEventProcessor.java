@@ -21,6 +21,7 @@ import io.sphere.sdk.payments.queries.PaymentQuery;
 import io.sphere.sdk.payments.queries.PaymentQueryModel;
 
 import javax.money.MonetaryAmount;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -76,10 +77,9 @@ public class DisputeEventProcessor extends PaymentHelperMethods {
         HashMap<String, Object> objects = new HashMap();
         objects.put("eventId", event.getId());
         objects.put("dispute", dispute.toString());
-        final List<UpdateAction<Payment>> updateActions = Arrays.<UpdateAction<Payment>>asList(
-            // Save full dispute object
-            AddInterfaceInteraction.ofTypeKeyAndObjects("STRIPE_DISPUTE_UPDATE", objects)
-        );
+        final List<UpdateAction<Payment>> updateActions = new ArrayList();
+        // Save full dispute object
+        updateActions.add(AddInterfaceInteraction.ofTypeKeyAndObjects("STRIPE_DISPUTE_UPDATE", objects));
         // Set status interface text to the dispute status and dispute reason
         final String statusText = "Dispute! Status: " + dispute.getStatus() + " Reason: " + dispute.getReason();
         if (!statusText.equals(payment.getPaymentStatus().getInterfaceText())) {

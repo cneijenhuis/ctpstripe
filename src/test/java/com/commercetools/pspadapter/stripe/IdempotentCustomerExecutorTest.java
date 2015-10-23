@@ -5,6 +5,7 @@ import com.commercetools.pspadapter.stripe.executors.IdempotentCustomerExecutor;
 import com.commercetools.pspadapter.stripe.util.JavaClientInstantiation;
 import com.commercetools.pspadapter.stripe.util.PaymentPair;
 import com.stripe.Stripe;
+import com.stripe.exception.*;
 import com.stripe.model.Card;
 import com.stripe.model.ExternalAccount;
 import com.stripe.model.Token;
@@ -28,36 +29,11 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-public class IdempotentCustomerExecutorTest {
-    final SphereClient client = new JavaClientInstantiation().instantiate();
-    final TypeKeyToId typeKeyToId = new TypeKeyToId(client);
-
-    @Before
-    public void before() throws Exception {
-        setStripeApiKey();
-        WebHookReceiver.createTypes(client);
-    }
-
-    private void setStripeApiKey() {
-        Stripe.apiKey = System.getenv("CTP_STRIPE_ADAPTER_STRIPE_API_KEY");
-    }
+public class IdempotentCustomerExecutorTest extends AbstractCTPStripeTest {
 
     @Test
     public void testCustomerCreation() throws Exception {
-        final Token token = WebHookReceiver.createTestToken();
-        final CustomFieldsDraft interaction = CustomFieldsDraftBuilder
-                .ofTypeKey("STRIPE_TOKEN_RECEIVED")
-                .addObject("token", token.getId())
-                .build();
-        final Reference customer = Reference.of(Customer.referenceTypeId(), "444df5fa-ffb8-415e-9755-448d3ddce32f");
-        final PaymentCreateCommand paymentCreateCommand = PaymentCreateCommand.of(
-            PaymentDraftBuilder
-                .of(FastMoney.of(23, DefaultCurrencyUnits.EUR))
-                .customer(customer)
-                .interfaceInteractions(Arrays.asList(interaction))
-                .build()
-        );
-        Payment beforePayment = client.execute(paymentCreateCommand).toCompletableFuture().get();
+        Payment beforePayment = createPayment();
 
         final IdempotentCustomerExecutor customerCreator = new IdempotentCustomerExecutor(beforePayment, client);
         assertFalse(customerCreator.previousExecution().isPresent());
@@ -93,7 +69,6 @@ public class IdempotentCustomerExecutorTest {
             .ofTypeKey("STRIPE_TOKEN_RECEIVED")
             .addObject("token", "tk_invalid")
             .build();
-        final Reference customer = Reference.of(Customer.referenceTypeId(), "444df5fa-ffb8-415e-9755-448d3ddce32f");
         final PaymentCreateCommand paymentCreateCommand = PaymentCreateCommand.of(
             PaymentDraftBuilder
                 .of(FastMoney.of(23, DefaultCurrencyUnits.EUR))
@@ -124,20 +99,7 @@ public class IdempotentCustomerExecutorTest {
 
     @Test
     public void testTemporarilyFailingCustomerCreation() throws Exception {
-        final Token token = WebHookReceiver.createTestToken();
-        final CustomFieldsDraft interaction = CustomFieldsDraftBuilder
-                .ofTypeKey("STRIPE_TOKEN_RECEIVED")
-                .addObject("token", token.getId())
-                .build();
-        final Reference customer = Reference.of(Customer.referenceTypeId(), "444df5fa-ffb8-415e-9755-448d3ddce32f");
-        final PaymentCreateCommand paymentCreateCommand = PaymentCreateCommand.of(
-            PaymentDraftBuilder
-                .of(FastMoney.of(23, DefaultCurrencyUnits.EUR))
-                .customer(customer)
-                .interfaceInteractions(Arrays.asList(interaction))
-                .build()
-        );
-        Payment beforePayment = client.execute(paymentCreateCommand).toCompletableFuture().get();
+        Payment beforePayment = createPayment();
 
         // Set invalid Stripe key to make request fail temporarily
         Stripe.apiKey = "invalid";
